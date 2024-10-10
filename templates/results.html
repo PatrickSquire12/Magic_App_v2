@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison Results</title>
+</head>
+<body>
+    <h1>Comparison Results</h1>
+    <nav>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+    <table>
+        <tr>
+            <th>File Name</th>
+            <th>Percentage</th>
+        </tr>
+        {% for filename, percentage in results %}
+        <tr>
+            <td>{{ filename }}</td>
+            <td>{{ percentage }}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="/">Upload More Files</a>
+</body>
+</html>

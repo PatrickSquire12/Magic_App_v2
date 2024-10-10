@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Comparison App</title>
+</head>
+<body>
+    <h1>Upload Files</h1>
+    <nav>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+    <form action="/upload_main" method="post" enctype="multipart/form-data">
+        <label for="main_file">Import Collection:</label>
+        <input type="file" name="main_file" required>
+        {% if main_file %}
+        <span style="font-style: italic;">{{ main_file }}</span>
+        {% endif %}
+        <button type="submit">Upload Import Collection</button>
+    </form>
+    <br>
+    {% for i in range(20) %}
+    <form action="/upload_other/{{ i }}" method="post" enctype="multipart/form-data">
+        <label for="other_file_{{ i }}">Deck {{ i + 1 }} Name:</label>
+        <input type="text" name="file_name" placeholder="Enter deck name" required>
+        <input type="file" name="other_file" required>
+        {% if other_files[i]['filename'] %}
+        <span style="font-style: italic;">{{ other_files[i]['filename'] }}</span>
+        {% endif %}
+        <button type="submit">Upload Deck {{ i + 1 }}</button>
+    </form>
+    <br>
+    {% endfor %}
+    <br>
+    <a href="/compare">Compare Files</a>
+</body>
+</html>
