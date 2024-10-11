@@ -16,14 +16,42 @@ class User(UserMixin):
         self.id = id
 
 # In-memory user storage for demonstration purposes
-users = {'user1': {'password': 'password1'}, 'user2': {'password': 'password2'}}
+users = {}
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User(user_id)
+    if user_id in users:
+        return User(user_id)
+    return None
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
+CREDENTIALS_FILE = 'user_credentials.txt'
+
+def save_credentials(username, password):
+    with open(CREDENTIALS_FILE, 'a') as file:
+        file.write(f'{username},{password}\n')
+
+def check_credentials(username, password):
+    try:
+        with open(CREDENTIALS_FILE, 'r') as file:
+            for line in file:
+                stored_username, stored_password = line.strip().split(',')
+                if stored_username == username and stored_password == password:
+                    return True
+    except FileNotFoundError:
+        return False
+    return False
+
+def load_users_from_file():
+    try:
+        with open(CREDENTIALS_FILE, 'r') as file:
+            for line in file:
+                username, password = line.strip().split(',')
+                users[username] = {'password': password}
+    except FileNotFoundError:
+        pass
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -34,6 +62,7 @@ def register():
             flash('Username already exists')
         else:
             users[username] = {'password': password}
+            save_credentials(username, password)  # Save credentials to file
             flash('Registration successful! Please log in.')
             return redirect(url_for('login'))
     return render_template('register.html')
@@ -43,7 +72,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if username in users and users[username]['password'] == password:
+        if check_credentials(username, password):  # Check credentials from file
             user = User(username)
             login_user(user)
             return redirect(url_for('index'))
@@ -100,7 +129,6 @@ def paste_other(file_index):
     session['other_files'] = other_files
     return redirect(url_for('index'))
 
-
 @app.route('/compare')
 @login_required
 def compare():
@@ -117,8 +145,6 @@ def compare():
                 results.append((other_file['name'], percentage))
     
     return render_template('results.html', results=results)
-
-
 
 def calculate_percentage(main_file_path, other_file_path):
     with open(main_file_path, 'r') as mf, open(other_file_path, 'r') as of:
@@ -139,9 +165,6 @@ def calculate_percentage(main_file_path, other_file_path):
     percentage = round((matching_lines / len(other_lines)) * 100)
     return f"{percentage}%"
 
-
-
-
-
 if __name__ == '__main__':
+    load_users_from_file()  # Load users from file before running the app
     app.run(debug=True)
