@@ -75,7 +75,6 @@ def index():
     
     return render_template('index.html', main_file=main_file, other_files=other_files)
 
-
 @app.route('/paste_main', methods=['POST'])
 @login_required
 def paste_main():
@@ -101,7 +100,6 @@ def paste_other(file_index):
     session['other_files'] = other_files
     return redirect(url_for('index'))
 
-
 @app.route('/compare')
 @login_required
 def compare():
@@ -114,21 +112,34 @@ def compare():
         if other_file['filename']:
             other_file_path = os.path.join(user_folder, f'other_file_{i}.txt')
             if os.path.exists(other_file_path):
-                percentage = calculate_percentage(main_file_path, other_file_path)
-                results.append((other_file['name'], percentage))
+                fraction = calculate_percentage(main_file_path, other_file_path)
+                results.append((other_file['name'], fraction))
     
     return render_template('results.html', results=results)
 
 
-
 def calculate_percentage(main_file_path, other_file_path):
     with open(main_file_path, 'r') as mf, open(other_file_path, 'r') as of:
-        main_lines = set(mf.readlines())
-        other_lines = set(of.readlines())
-        
-    matching_lines = main_lines.intersection(other_lines)
-    percentage = (len(matching_lines) / len(other_lines)) * 100
-    return percentage
+        main_lines = mf.readlines()
+        other_lines = of.readlines()
+    
+    # Strip newline characters, normalize text, and remove empty lines
+    main_lines = [line.strip().lower() for line in main_lines if line.strip()]
+    other_lines = [line.strip().lower() for line in other_lines if line.strip()]
+    
+    if not other_lines:
+        return "0%"  # Avoid division by zero
+    
+    # Count matching lines
+    matching_lines = sum(1 for line in other_lines if line in main_lines)
+    
+    # Calculate percentage and round to the nearest whole number
+    percentage = round((matching_lines / len(other_lines)) * 100)
+    return f"{percentage}%"
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
