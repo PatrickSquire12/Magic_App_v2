@@ -73,6 +73,11 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Clear existing flash messages only at the start of a new session
+    if 'new_session' not in session:
+        session.pop('_flashes', None)
+        session['new_session'] = True
+    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -90,6 +95,8 @@ def login():
             return redirect(url_for('login'))
     
     return render_template('login.html')
+
+
 
 
 @app.route('/logout')
@@ -183,14 +190,26 @@ def reset_password():
     if request.method == 'POST':
         username = request.form['username']
         new_password = request.form['new_password']
-        if username in users:
-            users[username]['password'] = new_password
-            update_credentials(username, new_password)
-            flash('Password reset successful! Please log in.')
-            return redirect(url_for('login'))
-        else:
-            flash('Username not found')
+        
+        # Load users from file
+        load_users_from_file()
+        
+        if username not in users:
+            flash('Username not recognized. Please try again or register.')
+            return redirect(url_for('reset_password'))
+        
+        # Update the password in the file
+        users[username]['password'] = new_password
+        with open(CREDENTIALS_FILE, 'w') as file:
+            for user, data in users.items():
+                file.write(f'{user},{data["password"]}\n')
+        
+        flash('Password reset successfully. Please log in with your new password.')
+        return redirect(url_for('login'))
+    
     return render_template('reset_password.html')
+
+
 
 
 def update_credentials(username, new_password):
