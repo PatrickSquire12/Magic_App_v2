@@ -164,6 +164,36 @@ def calculate_percentage(main_file_path, other_file_path):
     # Calculate percentage and round to the nearest whole number
     percentage = round((matching_lines / len(other_lines)) * 100)
     return f"{percentage}%"
+    
+    
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        username = request.form['username']
+        new_password = request.form['new_password']
+        if username in users:
+            users[username]['password'] = new_password
+            update_credentials(username, new_password)
+            flash('Password reset successful! Please log in.')
+            return redirect(url_for('login'))
+        else:
+            flash('Username not found')
+    return render_template('reset_password.html')
+
+
+def update_credentials(username, new_password):
+    lines = []
+    with open(CREDENTIALS_FILE, 'r') as file:
+        lines = file.readlines()
+    
+    with open(CREDENTIALS_FILE, 'w') as file:
+        for line in lines:
+            stored_username, stored_password = line.strip().split(',')
+            if stored_username == username:
+                file.write(f'{username},{new_password}\n')
+            else:
+                file.write(line)
+
 
 if __name__ == '__main__':
     load_users_from_file()  # Load users from file before running the app
