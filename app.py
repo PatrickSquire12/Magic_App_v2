@@ -90,15 +90,16 @@ def paste_main():
 @login_required
 def paste_other(file_index):
     text = request.form['text']
-    file_name = f'Deck {file_index + 1}'
+    deck_name = request.form['deck_name']  # Get the deck name from the form
     user_folder = os.path.join(app.config['UPLOAD_FOLDER'], current_user.id)
     other_files = session.get('other_files', [{'name': None, 'filename': None}] * 20)
     other_file_path = os.path.join(user_folder, f'other_file_{file_index}.txt')
     with open(other_file_path, 'w') as f:
         f.write(text)
-    other_files[file_index] = {'name': file_name, 'filename': 'Pasted Text'}
+    other_files[file_index] = {'name': deck_name, 'filename': 'Pasted Text'}
     session['other_files'] = other_files
     return redirect(url_for('index'))
+
 
 @app.route('/compare')
 @login_required
@@ -112,10 +113,11 @@ def compare():
         if other_file['filename']:
             other_file_path = os.path.join(user_folder, f'other_file_{i}.txt')
             if os.path.exists(other_file_path):
-                fraction = calculate_percentage(main_file_path, other_file_path)
-                results.append((other_file['name'], fraction))
+                percentage = calculate_percentage(main_file_path, other_file_path)
+                results.append((other_file['name'], percentage))
     
     return render_template('results.html', results=results)
+
 
 
 def calculate_percentage(main_file_path, other_file_path):

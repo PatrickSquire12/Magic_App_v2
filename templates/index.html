@@ -55,6 +55,8 @@
         <h2>Paste Text</h2>
         <textarea id="pasted-text" rows="10" cols="50"></textarea>
         <br>
+        <input type="text" id="deck-name" placeholder="Enter deck name">
+        <br>
         <button onclick="submitText()">Submit</button>
         <button onclick="hidePopup()">Cancel</button>
     </div>
@@ -77,8 +79,10 @@
 
         function submitText() {
             const text = document.getElementById('pasted-text').value;
+            const deckName = document.getElementById('deck-name').value;
             const formData = new FormData();
             formData.append('text', text);
+            formData.append('deck_name', deckName);  // Add deck name to form data
 
             let url = '';
             if (currentType === 'main') {

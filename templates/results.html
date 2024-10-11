@@ -10,18 +10,24 @@
     <nav>
         <a href="{{ url_for('logout') }}">Logout</a>
     </nav>
-    <table>
-        <tr>
-            <th>File Name</th>
-            <th>Percentage</th>
-        </tr>
-        {% for filename, percentage in results %}
-        <tr>
-            <td>{{ filename }}</td>
-            <td>{{ percentage }}%</td>
-        </tr>
-        {% endfor %}
-    </table>
+		<table>
+			<thead>
+				<tr>
+					<th>File Name</th>
+					<th>Match Percentage</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for name, percentage in results %}
+				<tr>
+					<td>{{ name }}</td>
+					<td>{{ percentage }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+
     <a href="/">Upload More Files</a>
 </body>
 </html>
