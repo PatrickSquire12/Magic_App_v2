@@ -4,34 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Comparison App</title>
+    <style>
+        /* Add some basic styling for the popup */
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #ccc;
+            padding: 20px;
+            background: #fff;
+            z-index: 1000;
+        }
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
 </head>
 <body>
     <h1>Upload Files</h1>
     <nav>
         <a href="{{ url_for('logout') }}">Logout</a>
     </nav>
-    <form action="/upload_main" method="post" enctype="multipart/form-data">
-        <label for="main_file">Import Collection:</label>
-        <input type="file" name="main_file" required>
-        {% if main_file %}
-        <span style="font-style: italic;">{{ main_file }}</span>
-        {% endif %}
-        <button type="submit">Upload Import Collection</button>
-    </form>
+    <button onclick="showPopup('main')">Paste Import Collection</button>
+    {% if main_file %}
+    <span style="font-style: italic;">{{ main_file }}</span>
+    {% endif %}
     <br>
     {% for i in range(20) %}
-    <form action="/upload_other/{{ i }}" method="post" enctype="multipart/form-data">
-        <label for="other_file_{{ i }}">Deck {{ i + 1 }} Name:</label>
-        <input type="text" name="file_name" placeholder="Enter deck name" required>
-        <input type="file" name="other_file" required>
-        {% if other_files[i]['filename'] %}
-        <span style="font-style: italic;">{{ other_files[i]['filename'] }}</span>
-        {% endif %}
-        <button type="submit">Upload Deck {{ i + 1 }}</button>
-    </form>
+    <button onclick="showPopup('other', {{ i }})">Paste Deck {{ i + 1 }}</button>
+    {% if other_files[i]['filename'] %}
+    <span style="font-style: italic;">{{ other_files[i]['filename'] }}</span>
+    {% endif %}
     <br>
     {% endfor %}
     <br>
     <a href="/compare">Compare Files</a>
+
+    <!-- Popup for pasting text -->
+    <div class="popup-overlay" id="popup-overlay"></div>
+    <div class="popup" id="popup">
+        <h2>Paste Text</h2>
+        <textarea id="pasted-text" rows="10" cols="50"></textarea>
+        <br>
+        <button onclick="submitText()">Submit</button>
+        <button onclick="hidePopup()">Cancel</button>
+    </div>
+
+    <script>
+        let currentType = '';
+        let currentIndex = 0;
+
+        function showPopup(type, index = 0) {
+            currentType = type;
+            currentIndex = index;
+            document.getElementById('popup-overlay').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+        }
+
+        function hidePopup() {
+            document.getElementById('popup-overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        function submitText() {
+            const text = document.getElementById('pasted-text').value;
+            const formData = new FormData();
+            formData.append('text', text);
+
+            let url = '';
+            if (currentType === 'main') {
+                url = '/paste_main';
+            } else {
+                url = `/paste_other/${currentIndex}`;
+            }
+
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to submit text');
+                }
+            });
+
+            hidePopup();
+        }
+    </script>
 </body>
 </html>

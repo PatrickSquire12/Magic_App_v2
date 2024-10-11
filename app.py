@@ -76,28 +76,31 @@ def index():
     return render_template('index.html', main_file=main_file, other_files=other_files)
 
 
-@app.route('/upload_main', methods=['POST'])
+@app.route('/paste_main', methods=['POST'])
 @login_required
-def upload_main():
-    main_file = request.files['main_file']
+def paste_main():
+    text = request.form['text']
     user_folder = os.path.join(app.config['UPLOAD_FOLDER'], current_user.id)
     main_file_path = os.path.join(user_folder, 'main_file.txt')
-    main_file.save(main_file_path)
-    session['main_file'] = main_file.filename
+    with open(main_file_path, 'w') as f:
+        f.write(text)
+    session['main_file'] = 'Pasted Text'
     return redirect(url_for('index'))
 
-@app.route('/upload_other/<int:file_index>', methods=['POST'])
+@app.route('/paste_other/<int:file_index>', methods=['POST'])
 @login_required
-def upload_other(file_index):
-    file_name = request.form['file_name']
-    other_file = request.files['other_file']
+def paste_other(file_index):
+    text = request.form['text']
+    file_name = f'Deck {file_index + 1}'
     user_folder = os.path.join(app.config['UPLOAD_FOLDER'], current_user.id)
     other_files = session.get('other_files', [{'name': None, 'filename': None}] * 20)
     other_file_path = os.path.join(user_folder, f'other_file_{file_index}.txt')
-    other_file.save(other_file_path)
-    other_files[file_index] = {'name': file_name, 'filename': other_file.filename}
+    with open(other_file_path, 'w') as f:
+        f.write(text)
+    other_files[file_index] = {'name': file_name, 'filename': 'Pasted Text'}
     session['other_files'] = other_files
     return redirect(url_for('index'))
+
 
 @app.route('/compare')
 @login_required
