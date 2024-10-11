@@ -27,7 +27,7 @@ def load_user(user_id):
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
-CREDENTIALS_FILE = 'user_credentials.txt'
+CREDENTIALS_FILE = 'user_data/user_credentials.txt'
 
 def save_credentials(username, password):
     with open(CREDENTIALS_FILE, 'a') as file:
