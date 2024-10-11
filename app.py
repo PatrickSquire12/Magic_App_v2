@@ -63,9 +63,18 @@ def index():
     user_folder = os.path.join(app.config['UPLOAD_FOLDER'], current_user.id)
     if not os.path.exists(user_folder):
         os.makedirs(user_folder)
+    
     main_file = session.get('main_file', None)
     other_files = session.get('other_files', [{'name': None, 'filename': None}] * 20)
+    
+    # Check if the files actually exist in the uploads folder
+    for i, other_file in enumerate(other_files):
+        other_file_path = os.path.join(user_folder, f'other_file_{i}.txt')
+        if not os.path.exists(other_file_path):
+            other_files[i] = {'name': None, 'filename': None}
+    
     return render_template('index.html', main_file=main_file, other_files=other_files)
+
 
 @app.route('/upload_main', methods=['POST'])
 @login_required
@@ -97,12 +106,17 @@ def compare():
     main_file_path = os.path.join(user_folder, 'main_file.txt')
     other_files = session.get('other_files', [])
     results = []
+    
     for i, other_file in enumerate(other_files):
         if other_file['filename']:
             other_file_path = os.path.join(user_folder, f'other_file_{i}.txt')
-            percentage = calculate_percentage(main_file_path, other_file_path)
-            results.append((other_file['name'], percentage))
+            if os.path.exists(other_file_path):
+                percentage = calculate_percentage(main_file_path, other_file_path)
+                results.append((other_file['name'], percentage))
+    
     return render_template('results.html', results=results)
+
+
 
 def calculate_percentage(main_file_path, other_file_path):
     with open(main_file_path, 'r') as mf, open(other_file_path, 'r') as of:
