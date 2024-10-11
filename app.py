@@ -38,11 +38,15 @@ def check_credentials(username, password):
         with open(CREDENTIALS_FILE, 'r') as file:
             for line in file:
                 stored_username, stored_password = line.strip().split(',')
-                if stored_username == username and stored_password == password:
-                    return True
+                if stored_username == username:
+                    if stored_password == password:
+                        return True
+                    else:
+                        return False
     except FileNotFoundError:
         return False
-    return False
+    return None  # Return None if username is not found
+
 
 def load_users_from_file():
     try:
@@ -72,13 +76,21 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if check_credentials(username, password):  # Check credentials from file
+        credentials_check = check_credentials(username, password)
+        
+        if credentials_check is None:
+            flash('Username not recognized. Please try again or register.')
+            return redirect(url_for('login'))
+        elif credentials_check:
             user = User(username)
             login_user(user)
             return redirect(url_for('index'))
         else:
             flash('Invalid credentials')
+            return redirect(url_for('login'))
+    
     return render_template('login.html')
+
 
 @app.route('/logout')
 @login_required
