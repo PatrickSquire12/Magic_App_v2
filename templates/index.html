@@ -27,6 +27,34 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+        .hint-icon {
+            display: inline-block;
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 14px;
+            color: #333;
+            background-color: #f1f1f1;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            position: relative;
+            top: -2px; /* Adjust this value to align it properly */
+        }
+        .hint-icon:hover::after {
+            content: attr(data-hint);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
@@ -34,7 +62,7 @@
     <nav>
         <a href="{{ url_for('logout') }}">Logout</a>
     </nav>
-    <button onclick="showPopup('main')">Paste Import Collection</button>
+    <button onclick="showPopup('main')">Paste Collection</button>
     {% if main_file %}
     <span style="font-style: italic;">{{ main_file }}</span>
     {% endif %}
@@ -52,7 +80,7 @@
     <!-- Popup for pasting text -->
     <div class="popup-overlay" id="popup-overlay"></div>
     <div class="popup" id="popup">
-        <h2>Paste Text</h2>
+        <h2>Paste Text <span class="hint-icon" data-hint="Please paste in the cards as text excluding quantities, e.g. Sol Ring, not 1 x Sol Ring">?</span></h2>
         <textarea id="pasted-text" rows="10" cols="50"></textarea>
         <br>
         <input type="text" id="deck-name" placeholder="Enter deck name">
@@ -70,6 +98,13 @@
             currentIndex = index;
             document.getElementById('popup-overlay').style.display = 'block';
             document.getElementById('popup').style.display = 'block';
+
+            if (type === 'main') {
+                document.getElementById('deck-name').style.display = 'none';
+                document.getElementById('deck-name').value = '';  // Set deck name to empty string
+            } else {
+                document.getElementById('deck-name').style.display = 'block';
+            }
         }
 
         function hidePopup() {
@@ -79,7 +114,7 @@
 
         function submitText() {
             const text = document.getElementById('pasted-text').value;
-            const deckName = document.getElementById('deck-name').value;
+            const deckName = document.getElementById('deck-name').value || '';  // Ensure deck name is an empty string if not provided
             const formData = new FormData();
             formData.append('text', text);
             formData.append('deck_name', deckName);  // Add deck name to form data
