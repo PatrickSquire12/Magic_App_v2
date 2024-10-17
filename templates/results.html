@@ -4,46 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comparison Results</title>
-    <style>
-        /* Style for the navigation bar */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        nav a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #333;
-        }
-    </style>
+    <!-- Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <nav>
-        <h1>Comparison Results</h1>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center">
+    <nav class="bg-white shadow p-4 w-full flex justify-between items-center mb-6">
+        <h1 class="text-xl font-bold">Comparison Results</h1>
         <div>
-            <a href="{{ url_for('guide') }}">Guide</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a class="text-blue-500 hover:underline ml-4" href="{{ url_for('guide') }}">Guide</a>
+            <a class="text-blue-500 hover:underline ml-4" href="{{ url_for('logout') }}">Logout</a>
         </div>
     </nav>
-    <table>
-        <thead>
-            <tr>
-                <th>File Name</th>
-                <th>Match Percentage</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for name, percentage in results %}
-            <tr>
-                <td>{{ name }}</td>
-                <td>{{ percentage }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="/">Upload More Files</a>
+    <div class="bg-white p-6 rounded shadow-md w-full max-w-4xl">
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b">File Name</th>
+                    <th class="py-2 px-4 border-b">Match Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for name, percentage in results %}
+                <tr>
+                    <td class="py-2 px-4 border-b">{{ name }}</td>
+                    <td class="py-2 px-4 border-b">{{ percentage }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-4 text-center">
+            <a class="bg-green-500 text-white px-4 py-2 rounded" href="/">Upload More Files</a>
+        </div>
+    </div>
 </body>
 </html>

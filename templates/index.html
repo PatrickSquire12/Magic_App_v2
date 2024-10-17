@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Comparison App</title>
+    <!-- Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         /* Add some basic styling for the popup */
         .popup {
@@ -55,53 +57,44 @@
             white-space: nowrap;
             z-index: 1;
         }
-        /* Style for the navigation bar */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        nav a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #333;
-        }
     </style>
 </head>
-<body>
-    <nav>
-        <h1>Upload Files</h1>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow p-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold">Upload Files</h1>
         <div>
-            <a href="{{ url_for('guide') }}">Guide</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a class="text-blue-500 hover:underline ml-4" href="{{ url_for('guide') }}">Guide</a>
+            <a class="text-blue-500 hover:underline ml-4" href="{{ url_for('logout') }}">Logout</a>
         </div>
     </nav>
-    <button onclick="showPopup('main')">Paste Collection</button>
-    {% if main_file %}
-    <span style="font-style: italic;">{{ main_file }}</span>
-    {% endif %}
-    <br>
-    {% for i in range(20) %}
-    <button onclick="showPopup('other', {{ i }})">Paste Deck {{ i + 1 }}</button>
-    {% if other_files[i]['filename'] %}
-    <span style="font-style: italic;">{{ other_files[i]['filename'] }}</span>
-    {% endif %}
-    <br>
-    {% endfor %}
-    <br>
-    <a href="/compare">Compare Files</a>
+    <div class="container mx-auto mt-4">
+        <a class="bg-green-500 text-white px-4 py-2 rounded mb-4 inline-block" href="/compare">Compare Files</a>
+	</div> 
+	    <div class="container mx-auto mt-4">
+        <button class="bg-blue-500 text-white px-4 py-2 rounded mb-4" onclick="showPopup('main')">Paste Collection</button>
+        {% if main_file %}
+        <span class="italic">{{ main_file }}</span>
+        {% endif %}
+        <br>
+        {% for i in range(20) %}
+        <button class="bg-gray-500 text-white px-4 py-2 rounded mt-2" onclick="showPopup('other', {{ i }})">Paste Deck {{ i + 1 }}</button>
+        {% if other_files[i]['filename'] %}
+        <span class="italic">{{ other_files[i]['filename'] }}</span>
+        {% endif %}
+        <br>
+        {% endfor %}
+    </div>
 
     <!-- Popup for pasting text -->
     <div class="popup-overlay" id="popup-overlay"></div>
-    <div class="popup" id="popup">
+    <div class="popup bg-white p-4 rounded shadow-lg" id="popup">
         <h2>Paste Text <span class="hint-icon" data-hint="Please paste in the cards as text excluding quantities, e.g. Sol Ring, not 1 x Sol Ring">?</span></h2>
-        <textarea id="pasted-text" rows="10" cols="50"></textarea>
+        <textarea id="pasted-text" class="w-full p-2 border rounded" rows="10" cols="50"></textarea>
         <br>
-        <input type="text" id="deck-name" placeholder="Enter deck name">
+        <input type="text" id="deck-name" class="w-full p-2 border rounded mt-2" placeholder="Enter deck name">
         <br>
-        <button onclick="submitText()">Submit</button>
-        <button onclick="hidePopup()">Cancel</button>
+        <button class="bg-blue-500 text-white px-4 py-2 rounded mt-2" onclick="submitText()">Submit</button>
+        <button class="bg-gray-500 text-white px-4 py-2 rounded mt-2" onclick="hidePopup()">Cancel</button>
     </div>
 
     <script>

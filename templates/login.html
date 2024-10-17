@@ -4,28 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <!-- Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Login</h1>
-    <form action="{{ url_for('login') }}" method="post">
-        <label for="username">Username:</label>
-        <input type="text" name="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required>
-        <br>
-        <button type="submit">Login</button>
-    </form>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
-    <p>Forgot your password? <a href="{{ url_for('reset_password') }}">Reset it here</a></p>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
+        <form action="{{ url_for('login') }}" method="post" class="space-y-4">
+            <div>
+                <label for="username" class="block text-gray-700">Username:</label>
+                <input type="text" name="username" required class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <div>
+                <label for="password" class="block text-gray-700">Password:</label>
+                <input type="password" name="password" required class="w-full p-2 border border-gray-300 rounded mt-1">
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded mt-4">Login</button>
+        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="mt-4 text-red-500">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <p class="mt-4 text-center">Don't have an account? <a href="{{ url_for('register') }}" class="text-blue-500 hover:underline">Register here</a></p>
+        <p class="mt-2 text-center">Forgot your password? <a href="{{ url_for('reset_password') }}" class="text-blue-500 hover:underline">Reset it here</a></p>
+    </div>
 </body>
 </html>
