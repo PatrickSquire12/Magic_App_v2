@@ -224,6 +224,11 @@ def update_credentials(username, new_password):
                 file.write(f'{username},{new_password}\n')
             else:
                 file.write(line)
+                
+                
+@app.route('/guide')
+def guide():
+    return render_template('guide.html')
 
 
 if __name__ == '__main__':

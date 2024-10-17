@@ -55,12 +55,27 @@
             white-space: nowrap;
             z-index: 1;
         }
+        /* Style for the navigation bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+        }
     </style>
 </head>
 <body>
-    <h1>Upload Files</h1>
     <nav>
-        <a href="{{ url_for('logout') }}">Logout</a>
+        <h1>Upload Files</h1>
+        <div>
+            <a href="{{ url_for('guide') }}">Guide</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
     </nav>
     <button onclick="showPopup('main')">Paste Collection</button>
     {% if main_file %}
