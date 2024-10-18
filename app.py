@@ -84,9 +84,15 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        
+        # Print the received username and password for debugging
+        print(f"Received login attempt with username: {username}")
+
         credentials_check = check_credentials(username, password)
 
+        # Print the result of the credentials check
         if credentials_check is None:
+            print('Username not recognized. Redirecting back to login.')
             flash('Username not recognized. Please try again or register.')
             return redirect(url_for('login'))
         elif credentials_check:
@@ -97,11 +103,21 @@ def login():
 
             # Handle redirect to the intended page
             next_page = request.args.get('next')
+            if next_page:
+                print(f"Redirecting to next page: {next_page}")
+            else:
+                print("No next page found. Redirecting to index.")
+                
             return redirect(next_page or url_for('index'))  # Redirect to next page or index
         else:
+            print('Invalid credentials provided. Redirecting back to login.')
             flash('Invalid credentials')
             return redirect(url_for('login'))
+    
+    # Print when the login page is rendered
+    print("Rendering login page.")
     return render_template('login.html')
+
 
 
 
