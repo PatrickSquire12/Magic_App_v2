@@ -87,15 +87,16 @@ import logging
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print(f"Session before login: {session.items()}")
+    print(f"User authenticated before login: {current_user.is_authenticated}")
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+
         # Print the received username and password for debugging
         print(f"Received login attempt with username: {username}")
-
         credentials_check = check_credentials(username, password)
-
         # Print the result of the credentials check
         if credentials_check is None:
             print('Username not recognized. Redirecting back to login.')
@@ -106,26 +107,22 @@ def login():
             login_user(user)
             session.permanent = True  # Mark session as permanent
             print(f"User {username} logged in successfully")
-
             # Handle redirect to the intended page
             next_page = request.args.get('next')
             if next_page:
                 print(f"Redirecting to next page: {next_page}")
             else:
                 print("No next page found. Redirecting to index.")
-                
+
             return redirect(next_page or url_for('index'))  # Redirect to next page or index
         else:
             print('Invalid credentials provided. Redirecting back to login.')
             flash('Invalid credentials')
             return redirect(url_for('login'))
-    
+
     # Print when the login page is rendered
     print("Rendering login page.")
     return render_template('login.html')
-
-
-
 
 @app.route('/logout')
 @login_required
@@ -136,20 +133,21 @@ def logout():
 @app.route('/')
 @login_required
 def index():
+    print(f"Session at index: {session.items()}")
+    print(f"User authenticated at index: {current_user.is_authenticated}")
+    
     user_folder = os.path.join(app.config['UPLOAD_FOLDER'], current_user.id)
     if not os.path.exists(user_folder):
         os.makedirs(user_folder)
-
     main_file = session.get('main_file', None)
     other_files = session.get('other_files', [{'name': None, 'filename': None}] * 20)
-
     # Check if the files actually exist in the uploads folder
     for i, other_file in enumerate(other_files):
         other_file_path = os.path.join(user_folder, f'other_file_{i}.txt')
         if not os.path.exists(other_file_path):
             other_files[i] = {'name': None, 'filename': None}
-
     return render_template('index.html', main_file=main_file, other_files=other_files)
+
 
 @app.route('/paste_main', methods=['POST'])
 @login_required
