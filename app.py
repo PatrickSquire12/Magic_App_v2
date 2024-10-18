@@ -73,11 +73,6 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Clear existing flash messages only at the start of a new session
-    if 'new_session' not in session:
-        session.pop('_flashes', None)
-        session['new_session'] = True
-    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -89,12 +84,13 @@ def login():
         elif credentials_check:
             user = User(username)
             login_user(user)
+            print(f"User {username} logged in successfully")
             return redirect(url_for('index'))
         else:
             flash('Invalid credentials')
             return redirect(url_for('login'))
-    
     return render_template('login.html')
+
 
 
 
