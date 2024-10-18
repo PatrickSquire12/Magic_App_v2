@@ -7,8 +7,12 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SECRET_KEY'] = 'your_secret_key'
 
 login_manager = LoginManager()
+
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+    return redirect(url_for('login'))
+
 login_manager.init_app(app)
-login_manager.login_view = 'login'
 
 # User model
 class User(UserMixin):
