@@ -81,7 +81,10 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        print("username" + username)
+        print("password" + password)
         credentials_check = check_credentials(username, password)
+        print("credentials_check"+str(credentials_check))
         
         if credentials_check is None:
             flash('Username not recognized. Please try again or register.')
