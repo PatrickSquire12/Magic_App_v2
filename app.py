@@ -77,26 +77,34 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html')
 
+import logging
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        logging.debug(f"Login attempt: Username={username}, Password={password}")  # Log the username and password (caution: avoid logging sensitive data in production)
+
         credentials_check = check_credentials(username, password)
+        logging.debug(f"Credentials check result: {credentials_check}")  # Log the result of credentials check
 
         if credentials_check is None:
             flash('Username not recognized. Please try again or register.')
+            logging.warning(f"Username not recognized: {username}")  # Log warning for unrecognized username
             return redirect(url_for('login'))
         elif credentials_check:
             user = User(username)
             login_user(user)
             session.permanent = True  # Mark session as permanent
-            print(f"User {username} logged in successfully")
+            logging.info(f"User {username} logged in successfully")  # Log successful login
             return redirect(url_for('index'))
         else:
             flash('Invalid credentials')
+            logging.warning(f"Invalid credentials for username: {username}")  # Log warning for invalid credentials
             return redirect(url_for('login'))
     return render_template('login.html')
+
 
 @app.route('/logout')
 @login_required
