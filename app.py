@@ -13,6 +13,12 @@ app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
+# Add these configurations ---comment out for local
+app.config['SESSION_COOKIE_DOMAIN'] = '.cardmirror.xyz'  # Replace with your domain
+app.config['SESSION_FILE_DIR'] = '/tmp/flask_session'
+app.config['SESSION_FILE_THRESHOLD'] = 100
+#   ------
+
 
 # Session Configuration
 app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions server-side in the filesystem
