@@ -96,9 +96,8 @@ def login():
             session.permanent = True  # Mark session as permanent
             print(f"User {username} logged in successfully")
 
-            # Redirect only on successful login
-            print("Redirecting to index")
-            return redirect(url_for('index'))
+            # Redirect to index with username in the URL
+            return redirect(url_for('index', username=username))
         else:
             print("Invalid credentials provided. Redirecting back to login.")
             flash('Invalid credentials')
@@ -106,6 +105,7 @@ def login():
 
     print("Rendering login page.")
     return render_template('login.html')
+
 
 
 
@@ -120,20 +120,25 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], current_user.id)
+    username = request.args.get('username')  # Retrieve the username from the URL
+    if not username:
+        return redirect(url_for('login'))
+
+    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
     if not os.path.exists(user_folder):
         os.makedirs(user_folder)
-    
+
     main_file = session.get('main_file', None)
     other_files = session.get('other_files', [{'name': None, 'filename': None}] * 20)
-    
+
     # Check if the files actually exist in the uploads folder
     for i, other_file in enumerate(other_files):
         other_file_path = os.path.join(user_folder, f'other_file_{i}.txt')
         if not os.path.exists(other_file_path):
             other_files[i] = {'name': None, 'filename': None}
-    
+
     return render_template('index.html', main_file=main_file, other_files=other_files)
+
 
 @app.route('/paste_main', methods=['POST'])
 @login_required
