@@ -77,27 +77,36 @@ def login():
     if 'new_session' not in session:
         session.pop('_flashes', None)
         session['new_session'] = True
-    
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        print("username" + username)
-        print("password" + password)
+        print("username: " + username)
+        print("password: " + password)
         credentials_check = check_credentials(username, password)
-        print("credentials_check"+str(credentials_check))
-        
+        print("credentials_check: " + str(credentials_check))
+
         if credentials_check is None:
+            print("Username not recognized. Redirecting back to login.")
             flash('Username not recognized. Please try again or register.')
             return redirect(url_for('login'))
         elif credentials_check:
             user = User(username)
             login_user(user)
+            session.permanent = True  # Mark session as permanent
+            print(f"User {username} logged in successfully")
+
+            # Redirect only on successful login
+            print("Redirecting to index")
             return redirect(url_for('index'))
         else:
+            print("Invalid credentials provided. Redirecting back to login.")
             flash('Invalid credentials')
             return redirect(url_for('login'))
-    
+
+    print("Rendering login page.")
     return render_template('login.html')
+
 
 
 
