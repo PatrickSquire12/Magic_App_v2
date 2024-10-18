@@ -233,4 +233,5 @@ def guide():
 
 if __name__ == '__main__':
     load_users_from_file()  # Load users from file before running the app
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
+
