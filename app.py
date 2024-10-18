@@ -109,6 +109,7 @@ def login():
 
     print("Rendering login page.")
     return render_template('login.html')
+    
 
 
 
@@ -125,12 +126,19 @@ def logout():
 @login_required
 def index():
     username = request.args.get('username')  # Retrieve the username from the URL
+    print("Username from URL: " + str(username))
+
     if not username:
+        print("No username found in URL. Redirecting to login.")
         return redirect(url_for('login'))
 
+    print("Username is valid. Continuing with index page.")
     user_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
+    print("User folder path: " + user_folder)
+
     if not os.path.exists(user_folder):
         os.makedirs(user_folder)
+        print("Created user folder.")
 
     main_file = session.get('main_file', None)
     other_files = session.get('other_files', [{'name': None, 'filename': None}] * 20)
@@ -138,9 +146,12 @@ def index():
     # Check if the files actually exist in the uploads folder
     for i, other_file in enumerate(other_files):
         other_file_path = os.path.join(user_folder, f'other_file_{i}.txt')
+        print(f"Checking existence of: {other_file_path}")
         if not os.path.exists(other_file_path):
             other_files[i] = {'name': None, 'filename': None}
+            print(f"File {other_file_path} does not exist. Setting name and filename to None.")
 
+    print("Rendering index page.")
     return render_template('index.html', main_file=main_file, other_files=other_files)
 
 
