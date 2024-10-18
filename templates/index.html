@@ -69,20 +69,20 @@
     </nav>
     <div class="container mx-auto mt-4">
         <a class="bg-green-500 text-white px-4 py-2 rounded mb-4 inline-block" href="/compare">Compare Files</a>
-	</div> 
-	    <div class="container mx-auto mt-4">
         <button class="bg-blue-500 text-white px-4 py-2 rounded mb-4" onclick="showPopup('main')">Paste Collection</button>
         {% if main_file %}
         <span class="italic">{{ main_file }}</span>
         {% endif %}
-        <br>
-        {% for i in range(20) %}
-        <button class="bg-gray-500 text-white px-4 py-2 rounded mt-2" onclick="showPopup('other', {{ i }})">Paste Deck {{ i + 1 }}</button>
-        {% if other_files[i]['filename'] %}
-        <span class="italic">{{ other_files[i]['filename'] }}</span>
-        {% endif %}
-        <br>
-        {% endfor %}
+        <div class="grid grid-cols-2 gap-4 mt-4">
+            {% for i in range(20) %}
+            <div>
+                <button class="bg-gray-500 text-white px-4 py-2 rounded" onclick="showPopup('other', {{ i }})">Paste Deck {{ i + 1 }}</button>
+                {% if other_files[i]['filename'] %}
+                <span class="italic">{{ other_files[i]['filename'] }}</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- Popup for pasting text -->
